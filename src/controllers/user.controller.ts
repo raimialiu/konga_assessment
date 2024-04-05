@@ -8,8 +8,10 @@ import Joi from "joi";
 import { compare } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
 import Application from '../config/app.config';
+import { Panic } from "../common";
+import { ApplicationError } from "../errors/application.error";
 
-export default new class UserController extends BaseController {
+export class UserController extends BaseController {
 
     private userRepo: UserRepository;
 
@@ -26,6 +28,7 @@ export default new class UserController extends BaseController {
 
         try {
             const payload = req.body;
+            console.log({createPayload: payload})
 
             const validateAllow = (value: any, allowedList: any[]) => {
                 console.log({ value, allowedList })
@@ -35,18 +38,25 @@ export default new class UserController extends BaseController {
             const schema = this.defineValidationSchema({
                 first_name: Joi.string().required(),
                 last_name: Joi.string().required(),
+                password: Joi.string().required(),
                 email: Joi.string().custom((v, h) => {
-                    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)
+                    const test =  /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)
+                    if(!test) {
+                        Panic(`invalid email`)
+                    }
+
+                    return true
                 }).required(),
                 role: Joi.string().custom((v, h) => {
                     return v && validateAllow(v.toLowerCase(), ['user', 'admin'])
                 }).required()
             })
 
+            
             // Validate The Movie Object
             const { error } = this.validateObject(schema, payload);
-            if (!error) {
-                return this.failedResponse(res, error.message)
+            if (error) {
+                return this.failedResponse(res, error.message, null, HttpStatusCodes.UNPROCCESSABLE_ENTITY)
             }
 
             const createResult = await this.userRepo.createUserAsync(payload)
@@ -55,7 +65,11 @@ export default new class UserController extends BaseController {
 
 
         } catch (err) {
-            console.log({ createMovieError: err });
+            console.log({ createUserError: err });
+
+            if(err instanceof ApplicationError) {
+                return this.failedResponse(res, err.Message, null, HttpStatusCodes.BAD_REQUEST);
+            }
 
             return this.failedResponse(res, ErrorMessages.GenericFailure);
         }
@@ -74,8 +88,8 @@ export default new class UserController extends BaseController {
 
             // Validate The Movie Object
             const { error } = this.validateObject(schema, payload);
-            if (!error) {
-                return this.failedResponse(res, error.message)
+            if (error) {
+                return this.failedResponse(res, error.message,  null, HttpStatusCodes.UNPROCCESSABLE_ENTITY)
             }
 
             const {email, password} = payload
@@ -129,8 +143,8 @@ export default new class UserController extends BaseController {
 
             // Validate The Movie Object
             const { error } = this.validateObject(schema, payload);
-            if (!error) {
-                return this.failedResponse(res, error.message)
+            if (error) {
+                return this.failedResponse(res, error.message, null, HttpStatusCodes.UNPROCCESSABLE_ENTITY)
             }
 
             const findUser = await this.userRepo.findOneUser({ id: payload.id })

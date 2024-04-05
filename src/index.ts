@@ -6,6 +6,7 @@ import { json, urlencoded } from "body-parser";
 
 import Application from "./config/app.config";
 import { Routes } from "./routes/api.route";
+import { UserRepository } from "./services/repository/user.repository";
 
 /**
  * Initialize an express js server
@@ -28,7 +29,14 @@ App.use(urlencoded({ extended: true }));
 /**
  * Initialize the application routes
 */
-Routes(App);
+
+
+// createTEstAdmin
+
+
+
+Routes(App)
+
 
 /**
  * Start the express server
@@ -36,3 +44,5 @@ Routes(App);
 App.listen(Application.APP_PORT || 1650, (): void => {
   console.log(`${Application.APP_NAME} is running on ${Application.APP_PORT}`)
 });
+
+export const appDetails = App

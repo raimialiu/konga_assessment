@@ -4,7 +4,7 @@ import Joi, { PartialSchemaMap } from "joi"
 export class BaseController {
 
     protected success<T>(resp, data: T, message: string = "OK", statusCode: number = 200) {
-        return resp.send({
+        return resp.status(statusCode).send({
             data,
             message,
             statusCode,
@@ -14,7 +14,7 @@ export class BaseController {
 
     protected failedResponse(resp, errors: any, message: string = "REQUEST FAILED",
         statusCode: number = 400) {
-        return resp.send(
+        return resp.status(statusCode).send(
             {
                 errors,
                 message,

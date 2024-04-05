@@ -13,6 +13,8 @@ export class User {
                 email, first_name, last_name, password, role
             } = data
 
+            console.log({dataDetails: data})
+
             this.email = email
             this.password = hashSync(password, 10)
             this.first_name = first_name
@@ -36,7 +38,7 @@ export class User {
     @Column({ unique: true, length: 120 })
     last_name: string
 
-    @Index()
+   @Index()
     @Column({ unique: true, length: 120 })
     email: string
 
