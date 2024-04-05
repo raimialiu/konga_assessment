@@ -9,7 +9,7 @@ export const Routes = ((Route: Application): void => {
 
   Route.post('/user', userController.create);
 
-  Route.put('/user', userController.update);
+  Route.put('/user', [validatetoken()], userController.update);
   Route.post('/user/login', userController.login);
 
   Route.get('/user/:user_id', userController.fetchSingle);

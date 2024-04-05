@@ -103,6 +103,7 @@ export class UserController extends BaseController {
             }
 
             const pwd = await compare(password, findUser.password)
+            console.log({pwdResult: pwd})
             if(!pwd) {
                 return this.failedResponse(res, `invalid authentication details`, null, HttpStatusCodes.UNAUTHORIZED)
             }
