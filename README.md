@@ -1,4 +1,4 @@
-# Soft Alliance Assesssment
+# Konga Assesssment
 
 Steps to run this project:
 
